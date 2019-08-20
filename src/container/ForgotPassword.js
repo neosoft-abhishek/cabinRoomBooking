@@ -24,13 +24,17 @@ class ForgotPassword extends React.Component {
     headerTintColor: "#000"
   };
   state = {
-    emailId: "",
-    password: ""
+    emailId: ""
   };
 
   onPressEvent = () => {
-    this.props.onLoginClick('ADD_PLACE',this.state.text);
-    this.props.navigation.navigate("Registration");
+    //this.props.onLoginClick('ADD_PLACE',this.state.text);
+    this.props.navigation.navigate("ResetPassword");
+  };
+
+  buttonEnable = () => {
+    const { emailId } = this.state;
+    return emailId;
   };
 
   onChangeValue(name) {
@@ -63,10 +67,18 @@ class ForgotPassword extends React.Component {
         </View>
         <View style={styles.bottomView}>
           <TouchableOpacity
-            style={styles.buttonStyle}
+            style={[
+              styles.buttonStyle,
+              {
+                backgroundColor: this.buttonEnable()
+                  ? colors.THEME_COLOR
+                  : colors.FADE_COLOR
+              }
+            ]}
+            disabled={!this.buttonEnable()}
             onPress={() => this.onPressEvent()}
           >
-            <Text style = {styles.buttonText}>{constants.DONE}</Text>
+            <Text style={styles.buttonText}>{constants.DONE}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -130,7 +142,7 @@ const styles = {
     width: "80%"
   },
   buttonStyle: {
-    backgroundColor:colors.THEME_COLOR,
+    backgroundColor: colors.THEME_COLOR,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.THEME_COLOR,
@@ -147,7 +159,7 @@ const styles = {
     color: "#fff",
     fontSize: 16,
     fontWeight: "700"
-  },
+  }
 };
 
 export default connect(

@@ -48,6 +48,17 @@ class Registration extends React.Component {
     };
   }
 
+  buttonEnable = () => {
+    const {
+      firstName,
+      lastName,
+      emailId,
+      password,
+      confirmPassword
+    } = this.state;
+    return firstName && lastName && emailId && password && confirmPassword;
+  };
+
   render() {
     return (
       <KeyboardAvoidingView style={styles.parentView} behavior="padding">
@@ -131,7 +142,7 @@ class Registration extends React.Component {
             </View>
             <TextInput
               style={styles.styleTextInput}
-              placeholder={constants.CONFIRMPASSWORD}
+              placeholder={constants.CONFIRM_PASSWORD}
               ref={input => (this.confirmPassword = input)}
               onSubmitEditing={() => {
                 Keyboard.dismiss;
@@ -144,13 +155,21 @@ class Registration extends React.Component {
           </View>
           <View style={styles.bottomView}>
             <TouchableOpacity
-              style={styles.buttonStyle}
+              style={[
+                styles.buttonStyle,
+                {
+                  backgroundColor: this.buttonEnable()
+                    ? colors.THEME_COLOR
+                    : colors.FADE_COLOR
+                }
+              ]}
               onPress={this.onPressEvent}
+              disabled={!this.buttonEnable()}
             >
               <Text style={styles.buttonText}>{constants.DONE}</Text>
             </TouchableOpacity>
             <Text style={styles.bottomText}>
-              {constants.ALREADY_AN_ACCOUT}
+              {constants.ALREADY_AN_ACCOUNT}
               <Text
                 onPress={() => this.props.navigation.navigate("Login")}
                 style={{

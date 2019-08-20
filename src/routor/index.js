@@ -11,12 +11,14 @@ import SelectSlot from "../container/SelectSlot";
 import MeetingRoom from "../container/MeetingRoom";
 import BookingRoomDetails from "../container/BookingRoomDetails";
 import PreviousBookRoom from "../container/PreviousBookRoom";
+import ResetPassword from "../container/ResetPassword";
 
 const AuthNavigator = createStackNavigator({
     Login : {    screen: LoginScreen },
     Registration : { screen : RegistrationScreen },
     ForgotPassword: { screen : ForgotScreen},
-    OTPVerification: {screen : OtpVerification}
+    OTPVerification: {screen : OtpVerification},
+    ResetPassword: { screen: ResetPassword}
 });
 
 const PostAuthNavigation = createStackNavigator({
@@ -26,6 +28,7 @@ const PostAuthNavigation = createStackNavigator({
     SelectSlot:{ screen : SelectSlot},
     MeetingRoom: { screen : MeetingRoom },
     BookingRoomDetails: { screen : BookingRoomDetails},
+  
 });
 
 const AppNavigator = createSwitchNavigator({

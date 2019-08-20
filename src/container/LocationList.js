@@ -18,11 +18,11 @@ import Accordion from "react-native-collapsible/Accordion";
 const data = [
   {
     locationCity: "Ahmedabad",
-    locationArea: [{ area: "91springboard" }]
+    locationArea: [{ area: "91 Spring Board" }]
   },
   {
     locationCity: "Bangalore",
-    locationArea: [{ area: "91springboard" }]
+    locationArea: [{ area: "91 Spring Board" }]
   },
   {
     locationCity: "Mumbai",
@@ -43,7 +43,7 @@ const data = [
   },
   {
     locationCity: "Noida",
-    locationArea: [{ area: "91springboard" }]
+    locationArea: [{ area: "91 Spring Board" }]
   },
   {
     locationCity: "Pune",
@@ -96,11 +96,11 @@ export default class LocationList extends Component {
     );
   };
 
-  renderItems = ({ item }) => {
+  renderItems = ({ item }, data) => {
     return (
       <TouchableOpacity style={styles.subTextStyle}
-      onPress = {()=> this.props.navigation.navigate('MeetingRoom')}>
-        <Text style={{ color: colors.WHITE, fontSize: 14 }}>{item.area}</Text>
+      onPress = {()=> this.props.navigation.navigate('MeetingRoom', { locationArea:item.area})}>
+        <Text style={{ color: colors.WHITE, fontSize: 15, fontWeight:'500' }}>{item.area}</Text>
       </TouchableOpacity>
     );
   };
@@ -136,7 +136,7 @@ export default class LocationList extends Component {
 
 const styles = {
   subTextStyle: {
-    borderWidth: 1,
+    borderWidth: 2,
     paddingHorizontal: 15,
     paddingVertical: 10,
     margin: 8,

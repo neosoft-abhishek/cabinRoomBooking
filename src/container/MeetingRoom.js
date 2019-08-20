@@ -3,6 +3,9 @@ import { View, FlatList, TouchableOpacity, Text } from "react-native";
 import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import moment, { min } from "moment";
+//import momentTime from "moment-timezone";
+
 
 const arrayOfMeetingRoom = [
   {
@@ -12,20 +15,20 @@ const arrayOfMeetingRoom = [
     capacity: 3,
     bookingTime: [
       {
-        startTime: "Tue Aug 13 2019 13:00:59 GMT+0530 (India Standard Time)",
-        endTime: "Tue Aug 13 2019 13:15:59 GMT+0530 (India Standard Time)"
+        startTime: "2019-08-19T12:00:00.330Z",
+        endTime: "2019-08-19T12:15:00.330Z"
       },
       {
-        startTime: "Tue Aug 13 2019 15:00:59 GMT+0530 (India Standard Time)",
-        endTime: "Tue Aug 13 2019 15:45:59 GMT+0530 (India Standard Time)"
+        startTime: "2019-08-19T12:15:00.330Z",
+        endTime: "2019-08-19T12:30:00.330Z"
       },
       {
-        startTime: "Tue Aug 13 2019 18:00:59 GMT+0530 (India Standard Time)",
-        endTime: "Tue Aug 13 2019 18:30:59 GMT+0530 (India Standard Time)"
+        startTime: "2019-08-19T15:00:00.330Z",
+        endTime: "2019-08-19T15:45:00.330Z"
       },
       {
-        startTime: "Tue Aug 13 2019 18:30:59 GMT+0530 (India Standard Time)",
-        endTime: "Tue Aug 13 2019 18:45:59 GMT+0530 (India Standard Time)"
+        startTime: "2019-08-19T19:00:00.330Z",
+        endTime: "2019-08-19T19:45:00.330Z"
       }
     ]
   },
@@ -36,20 +39,20 @@ const arrayOfMeetingRoom = [
     capacity: 3,
     bookingTime: [
       {
-        startTime: new Date(),
-        endTime: "Tue Aug 13 2019 14:15:59 GMT+0530 (India Standard Time)"
+        startTime: "2019-08-19T16:00:00",
+        endTime: "2019-08-19T16:15:00"
       },
       {
-        startTime: "Tue Aug 13 2019 16:00:59 GMT+0530 (India Standard Time)",
-        endTime: "Tue Aug 13 2019 16:45:59 GMT+0530 (India Standard Time)"
+        startTime: "2019-08-19T17:15:00",
+        endTime: "2019-08-19T17:30:00"
       },
       {
-        startTime: "Tue Aug 13 2019 19:00:59 GMT+0530 (India Standard Time)",
-        endTime: "Tue Aug 13 2019 19:30:59 GMT+0530 (India Standard Time)"
+        startTime: "2019-08-19T15:00:00",
+        endTime: "2019-08-19T15:45:00"
       },
       {
-        startTime: "Tue Aug 13 2019 19:30:59 GMT+0530 (India Standard Time)",
-        endTime: "Tue Aug 13 2019 19:45:59 GMT+0530 (India Standard Time)"
+        startTime: "2019-08-19T19:00:00",
+        endTime: "2019-08-19T19:45:00"
       }
     ]
   },
@@ -99,13 +102,20 @@ const arrayOfMeetingRoom = [
 
 class MeetingRoom extends Component {
   static navigationOptions = {
-    title: constants.MEETING_ROOM
-  };
+    title: constants.MEETING_ROOM,
+      headerStyle: {
+        backgroundColor: "#fff"
+      },
+      headerTintColor: "#000"
+    }
+    
   state = {};
 
   _keyExtractor = (item, index) => item.id;
 
   renderItems = ({ item }) => {
+    // console.log("MOmentChecking",
+    // momentTime(moment(item.bookingTime[0].startTime, "YYYY-MM-DDTHH:mm:ssZ").format('HH:mm'),'Asia/Calcutta').utcOffset(330))
     return (
       <TouchableOpacity
         onPress={() =>
@@ -117,7 +127,7 @@ class MeetingRoom extends Component {
         }
         style={[
           styles.slotTouchable,
-          { borderColor: item.available ? colors.GREEN : colors.YELLOW }
+          // { borderColor: item.available ? colors.GREEN : colors.YELLOW }
         ]}
       >
         <Text style={styles.topText}>Cp {item.capacity}</Text>
@@ -172,7 +182,7 @@ const styles = {
     textAlign: "center"
   },
   slotTouchable: {
-    borderWidth: 2,
+    borderWidth: 1,
     width: "45%",
     height: 150,
     backgroundColor: "#fff",
@@ -181,12 +191,12 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
-    borderColor: colors.THEME_COLOR,
+    borderColor: colors.GRAY,
     borderRadius: 15,
     elevation: 5,
     //borderWidth: 1,
     //borderColor: "#ddd",
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,

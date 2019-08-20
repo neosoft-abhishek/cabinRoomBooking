@@ -58,8 +58,12 @@ export default class LocationList extends Component {
     return {
       title: constants.LOCATION,
       headerLeft: navigation.state.params ? 
-       navigation.state.params.backKey : null 
-      }
+       navigation.state.params.backKey : null ,
+        headerStyle: {
+          backgroundColor: "#fff"
+        },
+        headerTintColor: "#000"
+      };
       // headerLeft: navigation.state.params ? 
       // navigation.state.params.backKey && { 
       //   title:'back'
@@ -104,6 +108,8 @@ export default class LocationList extends Component {
   _updateSections = activeSections => {
     this.setState({ activeSections });
   };
+  _keyExtractor = (item, index) => item.area;
+
 
   render() {
     return (

@@ -1,3 +1,4 @@
 export const reducerType = {
-    demo:'Demo'
+    demo:'Demo',
+    user_details:'user details'
 }

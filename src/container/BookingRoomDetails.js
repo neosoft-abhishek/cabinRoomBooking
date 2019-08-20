@@ -1,19 +1,29 @@
 import React, { Component } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Keyboard } from "react-native";
 import { colors } from "../utils/Colors";
 import { constants } from "../utils/Constants";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { pushUserDataList  } from '../action/index'
 
 class BookingRoomDetails extends Component {
   static navigationOptions = {
     title: "Details",
-    addReason: "",
-    email: ""
+    headerStyle: {
+      backgroundColor: "#fff"
+    },
+    headerTintColor: "#000"
   };
+
   constructor(props) {
     super(props);
     const params = this.props.navigation.state.params;
     this.state = {
-      getParams: params ? params : {}
+      getParams: params ? params : {},
+      emails: [],
+      reason: '',
+      email_1:'',
+      email_2:''
     };
   }
 
@@ -26,7 +36,7 @@ class BookingRoomDetails extends Component {
     );
   };
 
-  render() {
+  onDone = () => {
     const {
       roomCapacity,
       roomName,
@@ -34,6 +44,50 @@ class BookingRoomDetails extends Component {
       endTime,
       duration,
       onCancel
+    } = this.state.getParams;
+    const obj = {
+      roomName: roomName,
+      roomCapacity: roomCapacity,
+      startTime: startTime,
+      endTime: endTime,
+      duration: duration,
+      reason: this.state.reason,
+      email_1: this.state.email_1,
+      email_2: this.state.email_2
+    };
+
+    let pushUserDataList  = []
+    let saveData = this.props.arrayList ? this.props.arrayList : [] 
+    pushUserDataList = saveData
+    pushUserDataList.push(obj)
+
+    if (obj) {
+      this.props.pushArrayList(pushUserDataList);
+      this.props.navigation.navigate
+      //({ routeName: 'PreviousBookRoom', params: { someParam: 'PreviousBookRoom' }, key: 'PreviousBookRoom' })
+     ("PreviousBookRoom");
+    }
+  };
+
+  onChangeValue(name) {
+    return text => {
+      this.setState({ [name]: text });
+    };
+  }
+
+  // onSubmitEmailEditing = () => {
+  //   thit
+  // }
+
+  render() {
+    const {
+      roomCapacity,
+      roomName,
+      startTime,
+      endTime,
+      duration,
+      onCancel,
+      reason,email_1, email_2
     } = this.state.getParams;
     return (
       <View style={styles.container}>
@@ -50,7 +104,7 @@ class BookingRoomDetails extends Component {
           {this.renderEmployeeDetails(constants.EMPLOYEE_ID, "3295")}
           {this.renderEmployeeDetails(constants.START_TIME, startTime)}
           {this.renderEmployeeDetails(constants.END_TIME, endTime)}
-          {this.renderEmployeeDetails(constants.DURATION, duration)}
+          {this.renderEmployeeDetails(constants.DURATION, `${duration} min`)}
 
           <View style={styles.rowView}>
             <Text style={styles.keyText}>{constants.REASON} - </Text>
@@ -58,13 +112,15 @@ class BookingRoomDetails extends Component {
               style={[styles.styleTextInput, { width: "55%" }]}
               placeholder={"add reason"}
               multiline={true}
-              ref={input => (this.password = input)}
+             //ref={input => (this. = input)}
               onSubmitEditing={() => {
-                Keyboard.dismiss;
+                this.email_1.focus()
+               // Keyboard.dismiss;
               }}
-              //blurOnSubmit={false}
-              returnKeyType={"done"}
-              //onChangeText={this.onChangeValue("password")}
+              blurOnSubmit={false}
+              returnKeyType={"next"}
+              onChangeText={this.onChangeValue("reason")}
+            //  value = {reason ? reason : this.state.re}
             />
           </View>
           <View style={styles.rowView}>
@@ -73,33 +129,36 @@ class BookingRoomDetails extends Component {
               <TextInput
                 style={styles.styleTextInput}
                 placeholder={"add email address 1"}
-                ref={input => (this.password = input)}
+                ref={input => (this.email_1 = input)}
                 onSubmitEditing={() => {
-                  Keyboard.dismiss;
+                  this.email_2.focus()
+                  //Keyboard.dismiss;
                 }}
-                //blurOnSubmit={false}
-                returnKeyType={"done"}
-                //onChangeText={this.onChangeValue("password")}
+                blurOnSubmit={false}
+                returnKeyType={"next"}
+                //value={email_1 ?  email_1: ''}
+                onChangeText={this.onChangeValue("email_1")}
               />
               <TextInput
                 style={styles.styleTextInput}
                 placeholder={"add email address 2"}
-                ref={input => (this.password = input)}
+                ref={input => (this.email_2 = input)}
                 onSubmitEditing={() => {
                   Keyboard.dismiss;
                 }}
+                //value={email_2?  email_2: ''}
                 //blurOnSubmit={false}
                 returnKeyType={"done"}
-                //onChangeText={this.onChangeValue("password")}
+                onChangeText={this.onChangeValue("email_2")}
               />
             </View>
           </View>
         </View>
         <TouchableOpacity
           style={styles.buttonStyle}
-          onPress={() => this.props.navigation.navigate("PreviousBookRoom")}
+          onPress={() => this.onDone()}
         >
-          <Text>{constants.DONE}</Text>
+          <Text style = {styles.buttonText}>{constants.DONE}</Text>
         </TouchableOpacity>
 
         {onCancel && (
@@ -107,7 +166,7 @@ class BookingRoomDetails extends Component {
             style={[styles.buttonStyle, { marginTop: 10 }]}
             onPress={() => null}
           >
-            <Text>{constants.CANCEL}</Text>
+            <Text style = {styles.buttonText}>{constants.CANCEL}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -129,13 +188,14 @@ const styles = {
   keyText: {
     fontSize: 14,
     marginTop: 4,
-    width: "40%"
+    width: "40%",
+    color:colors.BLACK
   },
   valueText: {
     fontSize: 15,
     marginTop: 4,
     width: "60%",
-    color: colors.THEME_COLOR
+    color: colors.GRAY
   },
   cardBlockView: {
     padding: 10,
@@ -170,6 +230,7 @@ const styles = {
   },
   buttonStyle: {
     borderRadius: 10,
+    backgroundColor:colors.THEME_COLOR,
     borderWidth: 1,
     borderColor: colors.THEME_COLOR,
     top: "5%",
@@ -178,7 +239,27 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     padding: 10
-  }
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700"
+  },
 };
 
-export default BookingRoomDetails;
+const mapStateToProps = state => {
+  return {
+    arrayList: state.UserDetails.userDetails
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators(
+    {
+      pushArrayList: pushUserDataList
+    },
+    dispatch
+  );
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(BookingRoomDetails)

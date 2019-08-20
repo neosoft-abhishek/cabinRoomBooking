@@ -34,6 +34,7 @@ export const constants = {
     REASON:'Why you require?',
     SEND_INVITE:'Send Invites',
     LOCATION:'Location',
-    CANCEL:'C A N C E L'
+    CANCEL:'C A N C E L',
+    NO_SLOT:'No buffer time available for this room, Please change your start time'
 
 }

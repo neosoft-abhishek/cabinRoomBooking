@@ -39,7 +39,7 @@ class Registration extends React.Component {
   }
 
   onPressEvent = () => {
-    this.props.navigation.navigate("OTPVerifivation");
+    this.props.navigation.navigate("OTPVerification");
   };
 
   onChangeValue(name) {
@@ -145,9 +145,9 @@ class Registration extends React.Component {
           <View style={styles.bottomView}>
             <TouchableOpacity
               style={styles.buttonStyle}
-              onPress={() => this.onPressEvent()}
+              onPress={this.onPressEvent}
             >
-              <Text>{constants.DONE}</Text>
+              <Text style={styles.buttonText}>{constants.DONE}</Text>
             </TouchableOpacity>
             <Text style={styles.bottomText}>
               {constants.ALREADY_AN_ACCOUT}
@@ -191,6 +191,11 @@ const styles = {
     flex: 0.8,
     resizeMode: "contain"
   },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700"
+  },
   middleView: {
     flex: 3,
     width: "90%",
@@ -226,6 +231,7 @@ const styles = {
   buttonStyle: {
     borderRadius: 10,
     borderWidth: 1,
+    backgroundColor: colors.THEME_COLOR,
     borderColor: colors.THEME_COLOR,
     width: "100%",
     justifyContent: "center",

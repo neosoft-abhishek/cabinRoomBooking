@@ -14,14 +14,18 @@ import { onLoginClick } from "../action/index";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
+import DropdownAlert from "react-native-dropdownalert";
+import { emptyString, validateEmail } from "../utils/Validation";
+import {callbackApiCalling} from '../services/APICallbackMethod';
+import {urls} from '../services/Url'
 
 class Login extends React.Component {
   static navigationOptions = {
     header: null
   };
 
-  componentDidMount(){
-    this.props.demoUrlHit()
+  componentDidMount() {
+    this.props.demoUrlHit();
   }
 
   state = {
@@ -29,8 +33,52 @@ class Login extends React.Component {
     password: ""
   };
 
+  isEmpty = (str, key) => {
+    if (emptyString(str)) {
+      return true;
+    } else {
+      this.dropDownAlertRef.alertWithType(
+        "error",
+        "Error",
+        `${key} should not be empty`
+      );
+    }
+  };
+
+  isEmailValidate = email => {
+    if (validateEmail(email)) {
+      return true;
+    } else {
+      this.dropDownAlertRef.alertWithType(
+        "error",
+        "Error",
+        `This is not valid email address, please enter valid email address`
+      );
+    }
+  };
+
   onPressEvent = () => {
-    this.props.navigation.navigate("PreviousBookRoom");
+    const { emailId, password } = this.state;
+    // const body ={
+    //   email: "abhishek@neosofttech.com",
+    //   password: "qwerty1234"
+    // }
+    // callbackApiCalling.post(urls.loginUrl,body,null,null)
+    // .then((response)=>{
+    //   console.log('Data', response)
+
+    // }).catch((error)=>{
+    //   console.log('error', error);
+
+    // })
+    
+    // if (
+    //   this.isEmpty(emailId, "email address") &&
+    //   this.isEmpty(password, "password") &&
+    //   this.isEmailValidate(emailId)
+    // ) {
+      this.props.navigation.navigate("PreviousBookRoom");
+  //  }
   };
 
   onChangeValue(name) {
@@ -39,6 +87,18 @@ class Login extends React.Component {
     };
   }
 
+  validation = (event, value, error) => {
+    if (event.nativeEvent.text && value) {
+      value.focus();
+    } else {
+      this.dropDownAlertRef.alertWithType(
+        "error",
+        "Error",
+        `${error} should not be empty`
+      );
+    }
+  };
+
   render() {
     return (
       <KeyboardAvoidingView style={styles.parentView} behavior="padding">
@@ -46,6 +106,7 @@ class Login extends React.Component {
           style={styles.logoImage}
           source={{ uri: "http://mis.neosofttech.in//images/logo.jpg" }}
         />
+        <DropdownAlert ref={ref => (this.dropDownAlertRef = ref)} />
         <View style={styles.middleView}>
           <Text style={styles.titleText}>{constants.LOGIN_C}</Text>
           <View style={styles.inputView}>
@@ -55,8 +116,8 @@ class Login extends React.Component {
             <TextInput
               style={styles.styleTextInput}
               ref={input => (this.emailId = input)}
-              onSubmitEditing={() => {
-                this.password.focus();
+              onSubmitEditing={text => {
+                this.validation(text, this.password, "Email Id");
               }}
               blurOnSubmit={false}
               placeholder={constants.ENTER_EMAIL_ID}
@@ -73,7 +134,8 @@ class Login extends React.Component {
               style={styles.styleTextInput}
               placeholder={constants.ENTER_PASSWORD}
               ref={input => (this.password = input)}
-              onSubmitEditing={() => {
+              onSubmitEditing={event => {
+                this.validation(event, null, "Password");
                 Keyboard.dismiss;
               }}
               //blurOnSubmit={false}
@@ -92,15 +154,19 @@ class Login extends React.Component {
           <View style={styles.bottomView}>
             <TouchableOpacity
               style={styles.buttonStyle}
+            //  disabled ={true}
               onPress={() => this.onPressEvent()}
             >
-              <Text>{constants.DONE}</Text>
+              <Text style = {styles.buttonText}>{constants.DONE}</Text>
             </TouchableOpacity>
             <Text style={styles.bottomText}>
               {constants.NEED_AN_ACCOUNT}
               <Text
-                onPress={() => this.props.navigation.navigate("MeetingRoom")}
-                style={{ color: colors.THEME_COLOR, textDecorationLine: 'underline'}}
+                onPress={() => this.props.navigation.navigate("Registration")}
+                style={{
+                  color: colors.THEME_COLOR,
+                  textDecorationLine: "underline"
+                }}
               >
                 {constants.SIGN_UP}
               </Text>
@@ -131,6 +197,11 @@ const styles = {
   parentView: {
     alignItems: "center",
     flex: 0.8
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700"
   },
   logoImage: {
     width: "90%",
@@ -173,6 +244,8 @@ const styles = {
   buttonStyle: {
     borderRadius: 10,
     borderWidth: 1,
+    backgroundColor:colors.THEME_COLOR,
+
     borderColor: colors.THEME_COLOR,
     width: "100%",
     justifyContent: "center",

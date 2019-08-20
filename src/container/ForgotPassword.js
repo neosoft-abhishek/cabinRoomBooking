@@ -66,7 +66,7 @@ class ForgotPassword extends React.Component {
             style={styles.buttonStyle}
             onPress={() => this.onPressEvent()}
           >
-            <Text>{constants.DONE}</Text>
+            <Text style = {styles.buttonText}>{constants.DONE}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -130,6 +130,7 @@ const styles = {
     width: "80%"
   },
   buttonStyle: {
+    backgroundColor:colors.THEME_COLOR,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.THEME_COLOR,
@@ -141,7 +142,12 @@ const styles = {
   bottomText: {
     textAlign: "center",
     margin: 5
-  }
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700"
+  },
 };
 
 export default connect(

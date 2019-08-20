@@ -10,3 +10,11 @@ export const onLoginClick = () => {
       apicalling("GET", urls.demoUrl, null, null, reducerType.demo, dispatch)}
   )
 };
+
+export const pushUserDataList = (value) => {
+  return {
+    type: `onSuccess_${reducerType.user_details}`,
+    successPayload: value
+  }
+
+}

@@ -1,16 +1,16 @@
 import React, { Component } from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 
 export default class OtpVerification extends Component {
-//   static navigationOptions = {
-//     headerStyle: {
-//       backgroundColor: "#fff"
-//     },
-//     headerTintColor: "#000"
-//   };
+  static navigationOptions = {
+    headerStyle: {
+      backgroundColor: "#fff"
+    },
+    headerTintColor: "#000"
+  };
 
   state = {
       code:''
@@ -22,6 +22,11 @@ export default class OtpVerification extends Component {
         .then(() => this.setState({ code: '' }));
     }
   }
+
+  onPressEvent = () =>{
+this.props.navigation.navigate('Login')
+  }
+
   render() {
     const { code } = this.state
     return (
@@ -44,6 +49,13 @@ export default class OtpVerification extends Component {
         <Text onPress = {()=> alert('Re-send email Successful')}
         style = {{marginTop:15,textDecorationLine: 'underline'}}>
             Re-send email</Text>
+
+            <TouchableOpacity
+              style={styles.buttonStyle}
+              onPress={() => this.onPressEvent()}
+            >
+              <Text style={styles.buttonText}>{constants.DONE}</Text>
+            </TouchableOpacity>
       </View>
     );
   }
@@ -60,8 +72,24 @@ const styles = {
     marginBottom: "2%",
     fontWeight: "700"
   },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700"
+  },
+  buttonStyle: {
+    top:'10%',
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: colors.THEME_COLOR,
+    borderColor: colors.THEME_COLOR,
+    width: "90%",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10
+  },
   logoImage: {
-    width: "60%",
+    width: "90%",
     height: 100,
     resizeMode: "contain"
   },

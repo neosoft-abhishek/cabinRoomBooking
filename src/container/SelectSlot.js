@@ -13,7 +13,33 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { colors } from "../utils/Colors";
 import moment, { min } from "moment";
 
-const timeSlot = [
+const timeFormat = "YYYY-MM-DDTHH:mm:ss";
+const timeSlot_1 = [{ id: 0, time: 15 }];
+
+const timeSlot_2 = [{ id: 0, time: 15 }, { id: 1, time: 30 }];
+
+const timeSlot_3 = [
+  { id: 0, time: 15 },
+  { id: 1, time: 30 },
+  { id: 2, time: 45 }
+];
+
+const timeSlot_4 = [
+  { id: 0, time: 15 },
+  { id: 1, time: 30 },
+  { id: 2, time: 45 },
+  { id: 3, time: 60 }
+];
+
+const timeSlot_5 = [
+  { id: 0, time: 15 },
+  { id: 1, time: 30 },
+  { id: 2, time: 45 },
+  { id: 3, time: 60 },
+  { id: 4, time: 75 }
+];
+
+const timeSlot_6 = [
   { id: 0, time: 15 },
   { id: 1, time: 30 },
   { id: 2, time: 45 },
@@ -24,7 +50,11 @@ const timeSlot = [
 
 export default class SelectSlot extends Component {
   static navigationOptions = {
-    title: constants.TIMING
+    title: constants.TIMING,
+    headerStyle: {
+      backgroundColor: "#fff"
+    },
+    headerTintColor: "#000"
   };
 
   constructor(props) {
@@ -41,7 +71,9 @@ export default class SelectSlot extends Component {
       displayBuffer: false,
       bookingTime: params ? params.bookingTime : [],
       roomName: params ? params.roomName : "Room",
-      roomCapacity: params ? params.roomCapacity : 0
+      roomCapacity: params ? params.roomCapacity : 0,
+      noSlot: "",
+      bufferArray: ""
     };
   }
 
@@ -54,57 +86,96 @@ export default class SelectSlot extends Component {
   };
 
   handleDatePicked = date => {
-    //var hoursC = date.getHours(); //Current Hours
-    //var minC = date.getMinutes(); //Current Minutes
     const newStartTime = moment(date).format("hh:mm a");
-    // const oldTime =new Date()
-    // var now = "04/09/2013 15:00:00";
-    // var then = "04/09/2013 14:20:30";
-
-    // const differ = moment
-    //   .utc(
-    //     moment(date, "DD/MM/YYYY HH:mm a").diff(
-    //       moment(oldTime, "DD/MM/YYYY HH:mm a")
-    //     )
-    //   )
-    //   .format("HH:mm a");
-
-    //   console.log('Differ',differ)
 
     this.setState({
       startTimeValue: date,
       startTime: newStartTime,
-      showStartText: true
+      showStartText: true,
+      bufferText: "00",
+      endTime:'End Time'
     });
 
     this.hideDateTimePicker();
-    //this.checkAvailableTime(date);
+    this.checkAvailableTime(date);
+  };
+
+  compareDiff = (start, userStart) => {
+    diff = moment(start).diff(userStart);
+    const min = moment.duration(diff).minutes();
+    const hour = moment.duration(diff).hours();
+    const getTotalInMin = (hour * 60 + min) / 15;
+
+    switch (getTotalInMin) {
+      case 1:
+        return this.setState({
+          bufferArray: timeSlot_1,
+          noSlot: constants.SLOT_TIME
+        });
+      case 2:
+        return this.setState({
+          bufferArray: timeSlot_2,
+          noSlot: constants.SLOT_TIME
+        });
+      case 3:
+        return this.setState({
+          bufferArray: timeSlot_3,
+          noSlot: constants.SLOT_TIME
+        });
+      case 4:
+        return this.setState({
+          bufferArray: timeSlot_4,
+          noSlot: constants.SLOT_TIME
+        });
+      case 5:
+        return this.setState({
+          bufferArray: timeSlot_5,
+          noSlot: constants.SLOT_TIME
+        });
+      default:
+        return this.setState({
+          bufferArray: timeSlot_6,
+          noSlot: constants.SLOT_TIME
+        });
+    }
   };
 
   checkAvailableTime = value => {
     const { startTime, bookingTime } = this.state;
-    const compareTime = moment(value, "DD/MM/YYYY HH:mm");
-    if (bookingTime) {
-      bookingTime.map((data, index) => {
-        const start = moment(data.startTime, "DD/MM/YYYY HH:mm");
-        const end = moment(data.endTime, "DD/MM/YYYY HH:mm");
+    const compareTime = moment(value, timeFormat);
+    if (bookingTime && bookingTime.length > 0) {
+      bookingTime.some((data, index) => {
+        const start = moment(data.startTime, timeFormat);
+        const end = moment(data.endTime, timeFormat);
 
-        if (moment(start).isAfter(compareTime)) {
-          console.log(
-            "Is Same" +
-              moment.utc(moment(compareTime).diff(start)).format("mm"),
-            +(moment.utc(moment(compareTime).diff(start)).format("mm") / 15)
-          );
+        if (moment(start).isSame(compareTime)) {
+          this.setState({ noSlot: constants.NO_SLOT, bufferArray:[] });
+          return true;
         } else if (moment(compareTime).isBetween(start, end)) {
-          return console.log("IS Between");
-        } else {
-          console.log("IS None");
+          this.setState({ noSlot: constants.NO_SLOT });
+          return true;
+        } else if (moment(start).isAfter(compareTime)) {
+          this.compareDiff(start, compareTime);
+          return true;
+        }else{
+          return this.setState({ bufferArray: timeSlot_6,
+            noSlot: constants.SLOT_TIME,
+          });
         }
+      });
+    }else{
+      return this.setState({
+        bufferArray: timeSlot_6,
+        noSlot: constants.SLOT_TIME
       });
     }
   };
 
   _keyExtractor = (item, index) => item.id;
+ 
+ addMinutesToDate = (date, minutes) => {
+    return new Date(date.getTime() + minutes*60000);
+}
 
   bufferCall = value => {
     var endDate = moment(this.state.startTimeValue)
@@ -120,6 +191,8 @@ export default class SelectSlot extends Component {
     });
   };
 
+  
+
   renderTiming = ({ item }) => {
     return (
       <TouchableOpacity
@@ -132,7 +205,15 @@ export default class SelectSlot extends Component {
   };
 
   render() {
-    const {roomCapacity, roomName,bufferText, startTime, endTime, showEndText, showStartText} = this.state
+    const {
+      roomCapacity,
+      roomName,
+      bufferText,
+      startTime,
+      endTime,
+      showEndText,
+      showStartText
+    } = this.state;
     return (
       <ImageBackground
         source={{
@@ -141,12 +222,12 @@ export default class SelectSlot extends Component {
         }}
         style={styles.imageBackground}
       >
-        <Text style={styles.titleStyle}>{ roomName}</Text>
+        <Text style={styles.titleStyle}>{roomName}</Text>
         <Text style={styles.bufferText}>
           {constants.ROOM_CAPACITY}
-          { roomCapacity}
+          {roomCapacity}
         </Text>
-        <Icon name="calendar-clock" size={150} color={colors.THEME_COLOR} />
+        <Icon name="calendar-clock" size={120} color={colors.THEME_COLOR} />
         <Button title={constants.SELECT_DATE_TIME} onPress={null} />
 
         <View style={styles.slotView}>
@@ -156,7 +237,7 @@ export default class SelectSlot extends Component {
               style={[
                 styles.timeView,
                 {
-                  backgroundColor:  showStartText
+                  backgroundColor: showStartText
                     ? colors.THEME_COLOR
                     : colors.WHITE
                 }
@@ -166,29 +247,27 @@ export default class SelectSlot extends Component {
                 style={[
                   styles.timeText,
                   {
-                    color:  showStartText
-                      ? colors.WHITE
-                      : colors.THEME_COLOR
+                    color: showStartText ? colors.WHITE : colors.THEME_COLOR
                   }
                 ]}
               >
-                { startTime}
+                {startTime}
               </Text>
             </TouchableOpacity>
-            { showStartText && (
+            {showStartText && (
               <Text style={{ textAlign: "center" }}>
                 {constants.START_TIME}
               </Text>
             )}
           </View>
-          <Text style={styles.bufferText}>{ bufferText} min</Text>
+          <Text style={styles.bufferText}>{bufferText} min</Text>
           <View>
             <TouchableOpacity
               onPress={() => this.setState({ displayBuffer: true })}
               style={[
                 styles.timeView,
                 {
-                  backgroundColor:  showEndText
+                  backgroundColor: showEndText
                     ? colors.THEME_COLOR
                     : colors.WHITE
                 }
@@ -198,26 +277,26 @@ export default class SelectSlot extends Component {
                 style={[
                   styles.timeText,
                   {
-                    color:  showEndText
-                      ? colors.WHITE
-                      : colors.THEME_COLOR
+                    color: showEndText ? colors.WHITE : colors.THEME_COLOR
                   }
                 ]}
               >
-                { endTime}{" "}
+                {endTime}{" "}
               </Text>
             </TouchableOpacity>
-            { showEndText && (
+            {showEndText && (
               <Text style={{ textAlign: "center" }}>{constants.END_TIME}</Text>
             )}
           </View>
         </View>
 
-        { showStartText && (
+        {showStartText && (
           <>
-            <Text style={{ marginTop: 10 }}>{constants.SLOT_TIME}</Text>
+            <Text style={{ marginTop: 5, textAlign: "center" }}>
+              {this.state.noSlot}
+            </Text>
             <FlatList
-              data={timeSlot}
+              data={this.state.bufferArray}
               horizontal={false}
               numColumns={3}
               extraData={this.state}
@@ -226,23 +305,24 @@ export default class SelectSlot extends Component {
             />
             <TouchableOpacity
               style={styles.buttonStyle}
-              onPress={
-                ()=> this.props.navigation.navigate("BookingRoomDetails",{
+              onPress={() =>
+                this.props.navigation.navigate("BookingRoomDetails", {
                   roomCapacity: roomCapacity,
-                  roomName:  roomName,
+                  roomName: roomName,
                   startTime: startTime,
                   endTime: endTime,
                   duration: bufferText,
-                  onCancel:false
-                 })}
+                  onCancel: false
+                })
+              }
             >
-              <Text>{constants.DONE}</Text>
+              <Text style = {styles.buttonText}>{constants.DONE}</Text>
             </TouchableOpacity>
           </>
         )}
         <DateTimePicker
           mode={"time"}
-          minimumDate={new Date()}
+          minimumDate={this.addMinutesToDate(new Date(), 15)}
           minuteInterval={15}
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this.handleDatePicked}
@@ -258,6 +338,11 @@ const styles = {
     height: "100%",
     alignItems: "center",
     padding: "5%"
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700"
   },
   bufferText: {
     color: colors.BLACK,
@@ -296,12 +381,13 @@ const styles = {
   },
   slotView: {
     width: "100%",
-    height: 120,
+    height: 100,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around"
   },
   buttonStyle: {
+    backgroundColor: colors.THEME_COLOR,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.THEME_COLOR,

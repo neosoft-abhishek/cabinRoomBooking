@@ -3,6 +3,8 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
+import {callbackApiCalling } from '../services/APICallbackMethod'
+import {urls} from '../services/Url'
 
 export default class OtpVerification extends Component {
   static navigationOptions = {
@@ -16,15 +18,31 @@ export default class OtpVerification extends Component {
       code:''
   }
   pinInput = React.createRef();
+
+  buttonEnable = () => {
+    const { code } = this.state;
+    return code
+  };
+
   _checkCode = (code) => {
-    if (code != '1234') {
-      this.pinInput.current.shake()
-        .then(() => this.setState({ code: '' }));
-    }
+        this.setState({ code})
   }
 
   onPressEvent = () =>{
-this.props.navigation.navigate('Login')
+    
+      callbackApiCalling
+        .get(urls.OtpVerification+this.state.code, null)
+        .then(response => {
+          if (response.data.success) {
+            this.props.navigation.navigate('Login')
+
+          } else {
+            alert("Something went wrong...");
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
   }
 
   render() {
@@ -51,7 +69,15 @@ this.props.navigation.navigate('Login')
             Re-send email</Text>
 
             <TouchableOpacity
-              style={styles.buttonStyle}
+             style={[
+              styles.buttonStyle,
+              {
+                backgroundColor: this.buttonEnable()
+                  ? colors.THEME_COLOR
+                  : colors.FADE_COLOR
+              }
+            ]}
+            disabled={!this.buttonEnable()}
               onPress={() => this.onPressEvent()}
             >
               <Text style={styles.buttonText}>{constants.DONE}</Text>

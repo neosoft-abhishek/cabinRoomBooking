@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, TouchableOpacity, FlatList, Image } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, Image, ImageBackground } from "react-native";
 import { colors } from "../utils/Colors";
 import { constants } from "../utils/Constants";
 import { connect } from "react-redux";
@@ -118,7 +118,11 @@ class PreviousBookRoom extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <ImageBackground
+      source={{
+        uri:
+          "https://images.neosofttech.com/sites/all/themes/neosoft2017/images/banner.jpg"
+      }} style={styles.container}>
         <Text style={styles.bookingStyle}>
           {constants.BOOKING_LABEL} {""}
           <Text
@@ -142,7 +146,7 @@ class PreviousBookRoom extends Component {
           keyExtractor={this._keyExtractor}
           renderItem={this.renderDetails}
         />
-      </View>
+      </ImageBackground>
     );
   }
 }

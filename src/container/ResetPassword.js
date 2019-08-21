@@ -11,6 +11,10 @@ import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
 import Icon from "react-native-vector-icons/FontAwesome";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
+import DropdownAlert from "react-native-dropdownalert";
+import {callbackApiCalling} from '../services/APICallbackMethod';
+import {urls} from '../services/Url'
+
 
 export default class ResetPassword extends Component {
   static navigationOptions = {
@@ -27,13 +31,51 @@ export default class ResetPassword extends Component {
   };
   pinInput = React.createRef();
   _checkCode = code => {
-    if (code != "1234") {
-      this.pinInput.current.shake().then(() => this.setState({ code: "" }));
+    // if (code != "1234") {
+    //   this.pinInput.current.shake().then(() => this.setState({ code: "" }));
+    // }
+    this.setState({ code });
+  };
+
+  passwordMatching = () => {
+    const { password, confirmPassword } = this.state;
+    if (password === confirmPassword) return true;
+    else {
+      this.dropDownAlertRef.alertWithType(
+        "error",
+        "Mismatch Password",
+        constants.PASSWORD_MIS_MATCH
+      );
+      return false;
     }
   };
 
   onPressEvent = () => {
-    this.props.navigation.navigate("Login");
+    const { code, password } = this.state;
+    const body = {
+      verification_code: code,
+      password: password
+    };
+    if (code && this.passwordMatching()) {
+      callbackApiCalling
+        .post(urls.resetPassword, body, null, null)
+        .then(response => {
+          if (response.data.success) {
+            this.props.navigation.navigate("Login");
+          } else {
+            alert("Something went wrong...");
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    } else {
+      this.dropDownAlertRef.alertWithType(
+        "error",
+        "Error",
+        'Something went wrong...'
+      );
+    }
   };
 
   onChangeValue(name) {
@@ -45,23 +87,26 @@ export default class ResetPassword extends Component {
   buttonEnable = () => {
     const { code, password, confirmPassword } = this.state;
     return code && password && confirmPassword;
-    
   };
 
   render() {
     const { code } = this.state;
+    const { emailId } = this.props.navigation.state.params;
     return (
       <View style={styles.parentView}>
         <Image
           style={styles.logoImage}
           source={{ uri: "http://mis.neosofttech.in//images/logo.jpg" }}
         />
+        <DropdownAlert ref={ref => (this.dropDownAlertRef = ref)} />
         <Text style={styles.titleText}>{constants.RESET_PASSWORD}</Text>
         <Text>{constants.OTP_TEXT} </Text>
-        <Text style={{ marginBottom: 15 }}>to xyz@gmail.com</Text>
+        <Text style={{ marginBottom: 15 }}>to {emailId}</Text>
         <SmoothPinCodeInput
           ref={this.pinInput}
           value={code}
+          cellSize={40}
+          codeLength={6}
           onTextChange={code => this.setState({ code })}
           onFulfill={this._checkCode}
           onBackspace={() => console.log("No more back.")}

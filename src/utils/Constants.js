@@ -39,5 +39,10 @@ export const constants = {
     NO_SLOT:'No buffer time slot is available in this time for this room, Please change your start time or change room.',
     BOOKING_LABEL:'you want to book an again meeting room then',
     CLICK_HERE:'Click here',
-    RESET_PASSWORD:'Reset Password'
+    RESET_PASSWORD:'Reset Password',
+    EMAIL_ERROR_LABEL:'Please enter a valid email address which has provided by the Neosoft organization',
+    NOT_FOUND_EMAIL:'We cannot find an account with that email address in our database',
+    WARNING:'There was a problem',
+    PASSWORD_MIS_MATCH:'your password and confirm password is not matching, please try it again',
+    USER_CREDENTIAL_ERROR:'We cannot find an account with this credential in our database, please try it again.'
 }

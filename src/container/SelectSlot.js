@@ -92,8 +92,8 @@ export default class SelectSlot extends Component {
       startTimeValue: date,
       startTime: newStartTime,
       showStartText: true,
-      bufferText: "00",
-      endTime:'End Time'
+      bufferText: "",
+      endTime: "End Time"
     });
 
     this.hideDateTimePicker();
@@ -149,21 +149,22 @@ export default class SelectSlot extends Component {
         const end = moment(data.endTime, timeFormat);
 
         if (moment(start).isSame(compareTime)) {
-          this.setState({ noSlot: constants.NO_SLOT, bufferArray:[] });
+          this.setState({ noSlot: constants.NO_SLOT, bufferArray: [] });
           return true;
         } else if (moment(compareTime).isBetween(start, end)) {
-          this.setState({ noSlot: constants.NO_SLOT });
+          this.setState({ noSlot: constants.NO_SLOT, bufferArray: [] });
           return true;
         } else if (moment(start).isAfter(compareTime)) {
           this.compareDiff(start, compareTime);
           return true;
-        }else{
-          return this.setState({ bufferArray: timeSlot_6,
-            noSlot: constants.SLOT_TIME,
+        } else {
+          return this.setState({
+            bufferArray: timeSlot_6,
+            noSlot: constants.SLOT_TIME
           });
         }
       });
-    }else{
+    } else {
       return this.setState({
         bufferArray: timeSlot_6,
         noSlot: constants.SLOT_TIME
@@ -171,11 +172,16 @@ export default class SelectSlot extends Component {
     }
   };
 
+  buttonEnable = () => {
+    const { bufferText } = this.state;
+    return bufferText;
+  };
+
   _keyExtractor = (item, index) => item.id;
- 
- addMinutesToDate = (date, minutes) => {
-    return new Date(date.getTime() + minutes*60000);
-}
+
+  addMinutesToDate = (date, minutes) => {
+    return new Date(date.getTime() + minutes * 60000);
+  };
 
   bufferCall = value => {
     var endDate = moment(this.state.startTimeValue)
@@ -190,8 +196,6 @@ export default class SelectSlot extends Component {
       showEndText: true
     });
   };
-
-  
 
   renderTiming = ({ item }) => {
     return (
@@ -304,7 +308,15 @@ export default class SelectSlot extends Component {
               renderItem={this.renderTiming}
             />
             <TouchableOpacity
-              style={styles.buttonStyle}
+              style={[
+                styles.buttonStyle,
+                {
+                  backgroundColor: this.buttonEnable()
+                    ? colors.THEME_COLOR
+                    : colors.FADE_COLOR
+                }
+              ]}
+              disabled={!this.buttonEnable()}
               onPress={() =>
                 this.props.navigation.navigate("BookingRoomDetails", {
                   roomCapacity: roomCapacity,
@@ -316,7 +328,7 @@ export default class SelectSlot extends Component {
                 })
               }
             >
-              <Text style = {styles.buttonText}>{constants.DONE}</Text>
+              <Text style={styles.buttonText}>{constants.DONE}</Text>
             </TouchableOpacity>
           </>
         )}

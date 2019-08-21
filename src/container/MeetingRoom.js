@@ -3,7 +3,8 @@ import { View, FlatList, TouchableOpacity, Text } from "react-native";
 import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import moment, { min } from "moment";
+import Icons from "react-native-vector-icons/Feather";
+//import moment, { min } from "moment";
 //import momentTime from "moment-timezone";
 
 
@@ -15,20 +16,20 @@ const arrayOfMeetingRoom = [
     capacity: 3,
     bookingTime: [
       {
-        startTime: "2019-08-19T12:00:00.330Z",
-        endTime: "2019-08-19T12:15:00.330Z"
+        startTime: "2019-08-20T16:00:00",
+        endTime: "2019-08-20T16:15:00"
       },
       {
-        startTime: "2019-08-19T12:15:00.330Z",
-        endTime: "2019-08-19T12:30:00.330Z"
+        startTime: "2019-08-20T16:15:00",
+        endTime: "2019-08-20T16:30:00"
       },
       {
-        startTime: "2019-08-19T15:00:00.330Z",
-        endTime: "2019-08-19T15:45:00.330Z"
+        startTime: "2019-08-20T18:00:00",
+        endTime: "2019-08-20T18:45:00"
       },
       {
-        startTime: "2019-08-19T19:00:00.330Z",
-        endTime: "2019-08-19T19:45:00.330Z"
+        startTime: "2019-08-20T20:00:00",
+        endTime: "2019-08-20T20:45:00"
       }
     ]
   },
@@ -108,8 +109,14 @@ class MeetingRoom extends Component {
       },
       headerTintColor: "#000"
     }
-    
-  state = {};
+
+  constructor(props){
+    super(props)
+    var getParams = this.props.navigation.state.params
+    this.state = {
+      locationArea: getParams.locationArea
+    }
+  }
 
   _keyExtractor = (item, index) => item.id;
 
@@ -130,7 +137,12 @@ class MeetingRoom extends Component {
           // { borderColor: item.available ? colors.GREEN : colors.YELLOW }
         ]}
       >
-        <Text style={styles.topText}>Cp {item.capacity}</Text>
+        <Text style={styles.topText}>
+          <Icons
+          name={'users'}
+          size={16}
+          color={colors.THEME_COLOR}
+        /> {""}{item.capacity} </Text>
         <Icon
           name={item.available ? "home-city-outline" : "home-alert"}
           size={50}
@@ -149,6 +161,7 @@ class MeetingRoom extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Text style = {styles.titleStyle}>{this.state.locationArea}</Text>
         <FlatList
           contentContainerStyle={{ alignItems: "center" }}
           data={arrayOfMeetingRoom}
@@ -167,8 +180,15 @@ const styles = {
   container: {
     flex: 1,
     alignItems: "center",
-    padding: "3%",
+    padding: "1%",
     backgroundColor: "#f7f7f7"
+  },
+  titleStyle:{
+    margin:5,
+    textAlign:'center',
+    fontSize:16,
+    fontWeight:'700',
+    color:colors.THEME_COLOR
   },
   topText: {
     position: "absolute",

@@ -16,8 +16,8 @@ import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
 import DropdownAlert from "react-native-dropdownalert";
 import { emptyString, validateEmail } from "../utils/Validation";
-import {callbackApiCalling} from '../services/APICallbackMethod';
-import {urls} from '../services/Url'
+import { callbackApiCalling } from "../services/APICallbackMethod";
+import { urls } from "../services/Url";
 
 class Login extends React.Component {
   static navigationOptions = {
@@ -59,26 +59,29 @@ class Login extends React.Component {
 
   onPressEvent = () => {
     const { emailId, password } = this.state;
-    // const body ={
-    //   email: "abhishek@neosofttech.com",
-    //   password: "qwerty1234"
-    // }
-    // callbackApiCalling.post(urls.loginUrl,body,null,null)
-    // .then((response)=>{
-    //   console.log('Data', response)
+    const body = {
+      email: "pushkar.abhishek@neosofttech.com",
+      password: "qwerty1234"
+    };
 
-    // }).catch((error)=>{
-    //   console.log('error', error);
-
-    // })
-    
-    // if (
-    //   this.isEmpty(emailId, "email address") &&
-    //   this.isEmpty(password, "password") &&
-    //   this.isEmailValidate(emailId)
-    // ) {
-      this.props.navigation.navigate("PreviousBookRoom");
-  //  }
+    if (
+      this.isEmpty(emailId, "email address") &&
+      this.isEmpty(password, "password") &&
+      this.isEmailValidate(emailId)
+    ) {
+      callbackApiCalling
+        .post(urls.loginUrl, body, null, null)
+        .then(response => {
+          if (response.data.success) {
+            this.props.navigation.navigate("LocationList");
+          } else {
+            alert("Something went wrong...");
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    }
   };
 
   onChangeValue(name) {
@@ -86,6 +89,11 @@ class Login extends React.Component {
       this.setState({ [name]: text });
     };
   }
+
+  buttonEnable = () => {
+    const { emailId, password } = this.state;
+    return emailId && password;
+  };
 
   validation = (event, value, error) => {
     if (event.nativeEvent.text && value) {
@@ -100,6 +108,7 @@ class Login extends React.Component {
   };
 
   render() {
+    const { invisible } = this.state;
     return (
       <KeyboardAvoidingView style={styles.parentView} behavior="padding">
         <Image
@@ -153,11 +162,18 @@ class Login extends React.Component {
 
           <View style={styles.bottomView}>
             <TouchableOpacity
-              style={styles.buttonStyle}
-            //  disabled ={true}
+              style={[
+                styles.buttonStyle,
+                {
+                  backgroundColor: this.buttonEnable()
+                    ? colors.THEME_COLOR
+                    : colors.FADE_COLOR
+                }
+              ]}
+              disabled={!this.buttonEnable()}
               onPress={() => this.onPressEvent()}
             >
-              <Text style = {styles.buttonText}>{constants.DONE}</Text>
+              <Text style={styles.buttonText}>{constants.DONE}</Text>
             </TouchableOpacity>
             <Text style={styles.bottomText}>
               {constants.NEED_AN_ACCOUNT}
@@ -244,8 +260,6 @@ const styles = {
   buttonStyle: {
     borderRadius: 10,
     borderWidth: 1,
-    backgroundColor:colors.THEME_COLOR,
-
     borderColor: colors.THEME_COLOR,
     width: "100%",
     justifyContent: "center",

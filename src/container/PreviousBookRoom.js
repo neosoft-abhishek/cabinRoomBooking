@@ -78,8 +78,8 @@ class PreviousBookRoom extends Component {
             duration: item.duration,
             onCancel: true,
             reason: item.reason,
-            email : item.email_2,
-            email: item.email_2
+            email_1 : item.email_1,
+            email_2: item.email_2
 
           })
         }
@@ -120,7 +120,7 @@ class PreviousBookRoom extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.bookingStyle}>
-          If you want to book a room then {""}
+          {constants.BOOKING_LABEL} {""}
           <Text
             onPress={() =>
               this.props.navigation.navigate("LocationList", {
@@ -132,7 +132,7 @@ class PreviousBookRoom extends Component {
               textDecorationLine: "underline"
             }}
           >
-            Click here
+            {constants.CLICK_HERE}
           </Text>
         </Text>
 
@@ -155,6 +155,7 @@ const styles = {
   bookingStyle: {
     textAlign: "center",
     fontSize: 14,
+    marginHorizontal:30,
     margin: 10
   },
   cardTitleText: {

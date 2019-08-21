@@ -40,7 +40,7 @@ export const callbackApiCalling = {
     return axios
       .get(url, headerData)
       .then(response => {
-        return response.data;
+        return response;
       })
       .catch(error => {
         return Promise.reject(error);

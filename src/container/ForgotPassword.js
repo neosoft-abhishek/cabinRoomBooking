@@ -4,9 +4,6 @@ import {
   Text,
   TextInput,
   Image,
-  ScrollView,
-  Keyboard,
-  Button
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -15,6 +12,12 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
+import {callbackApiCalling } from '../services/APICallbackMethod';
+import DropdownAlert from "react-native-dropdownalert";
+import {urls} from '../services/Url';
+import { emptyString, validateEmail } from "../utils/Validation";
+
+
 
 class ForgotPassword extends React.Component {
   static navigationOptions = {
@@ -28,8 +31,33 @@ class ForgotPassword extends React.Component {
   };
 
   onPressEvent = () => {
-    //this.props.onLoginClick('ADD_PLACE',this.state.text);
-    this.props.navigation.navigate("ResetPassword");
+    const body = {
+      email:this.state.emailId
+    }
+   
+    if(validateEmail(this.state.emailId)){
+    callbackApiCalling
+        .post(urls.forgotPassword, body, null, null)
+        .then(response => {
+          if (response.data.success) {
+            this.props.navigation.navigate("ResetPassword", {emailId:this.state.emailId});
+          } else {
+            alert("Something went wrong...");
+          }
+        })
+        .catch(error => {
+          if(error.response.status === 400 )
+          this.dropDownAlertRef.alertWithType('warn',constants.WARNING,constants.NOT_FOUND_EMAIL)
+          console.log("error", error);
+        });
+      }else {
+        this.dropDownAlertRef.alertWithType(
+          "error",
+          "Error",
+          constants.EMAIL_ERROR_LABEL
+        );
+      }
+    
   };
 
   buttonEnable = () => {
@@ -50,6 +78,7 @@ class ForgotPassword extends React.Component {
           style={styles.logoImage}
           source={{ uri: "http://mis.neosofttech.in//images/logo.jpg" }}
         />
+        <DropdownAlert ref={ref => (this.dropDownAlertRef = ref)} />
         <View style={styles.middleView}>
           <Text style={styles.titleText}>{constants.FORGOT_PASSWORD}</Text>
           <View style={styles.inputView}>

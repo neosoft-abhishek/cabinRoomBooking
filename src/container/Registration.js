@@ -15,6 +15,10 @@ import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
 import { callbackApiCalling } from "../services/APICallbackMethod";
 import { urls } from "../services/Url";
+import { emptyString, validateEmail } from "../utils/Validation";
+import DropdownAlert from "react-native-dropdownalert";
+
+
 
 class Registration extends React.Component {
   static navigationOptions = {
@@ -38,8 +42,44 @@ class Registration extends React.Component {
       });
   }
 
+  isEmailValidate = email => {
+    if (validateEmail(email)) {
+      return true;
+    } else {
+      this.dropDownAlertRef.alertWithType(
+        "error",
+        "Error",
+        constants.EMAIL_ERROR_LABEL
+      );
+      return false
+    }
+  };
+
+
   onPressEvent = () => {
-    this.props.navigation.navigate("OTPVerification");
+    const { emailId , password, firstName, lastName  } = this.state;
+    const body = {
+      first_name: firstName,
+      last_name: lastName,
+      email: emailId,
+      password: password,
+      confirm_password: password,
+      role: "user"
+    };
+    if ( this.isEmailValidate(emailId) && this.passwordMatching()) {
+      callbackApiCalling
+        .post(urls.signUp, body, null, null)
+        .then(response => {
+          if (response.data.success) {
+            this.props.navigation.navigate("OTPVerification");
+          } else {
+            alert("Something went wrong...");
+          }
+        })
+        .catch(error => {
+          console.log("error", error);
+        });
+    } 
   };
 
   onChangeValue(name) {
@@ -47,6 +87,19 @@ class Registration extends React.Component {
       this.setState({ [name]: text });
     };
   }
+
+  passwordMatching = () => {
+    const { password, confirmPassword } = this.state;
+    if (password === confirmPassword) return true;
+    else {
+      this.dropDownAlertRef.alertWithType(
+        "error",
+        "Mismatch Password",
+        constants.PASSWORD_MIS_MATCH
+      );
+      return false;
+    }
+  };
 
   buttonEnable = () => {
     const {
@@ -66,6 +119,7 @@ class Registration extends React.Component {
           style={styles.logoImage}
           source={{ uri: "http://mis.neosofttech.in//images/logo.jpg" }}
         />
+        <DropdownAlert ref={ref => (this.dropDownAlertRef = ref)} />
         <View style={styles.middleView}>
           <Text style={styles.titleText}>{constants.SIGN_UP_C}</Text>
           <View style={styles.inputView}>

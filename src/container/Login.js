@@ -52,16 +52,17 @@ class Login extends React.Component {
       this.dropDownAlertRef.alertWithType(
         "error",
         "Error",
-        `This is not valid email address, please enter valid email address`
+        constants.EMAIL_ERROR_LABEL
       );
+      return false
     }
   };
 
   onPressEvent = () => {
     const { emailId, password } = this.state;
     const body = {
-      email: "pushkar.abhishek@neosofttech.com",
-      password: "qwerty1234"
+      email: emailId,
+      password: password
     };
 
     if (
@@ -79,7 +80,10 @@ class Login extends React.Component {
           }
         })
         .catch(error => {
+          if(error.response.status === 400 )
+          this.dropDownAlertRef.alertWithType('error',constants.WARNING,constants.USER_CREDENTIAL_ERROR)
           console.log("error", error);
+          
         });
     }
   };

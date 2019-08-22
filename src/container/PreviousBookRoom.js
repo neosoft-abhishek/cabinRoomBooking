@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, TouchableOpacity, FlatList, Image, ImageBackground } from "react-native";
+import { View,StatusBar, Text, TouchableOpacity, FlatList, Image, ImageBackground } from "react-native";
 import { colors } from "../utils/Colors";
 import { constants } from "../utils/Constants";
 import { connect } from "react-redux";
@@ -123,6 +123,10 @@ class PreviousBookRoom extends Component {
         uri:
           "https://images.neosofttech.com/sites/all/themes/neosoft2017/images/banner.jpg"
       }} style={styles.container}>
+         <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.THEME_COLOR}
+        />
         <Text style={styles.bookingStyle}>
           {constants.BOOKING_LABEL} {""}
           <Text

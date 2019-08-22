@@ -47,6 +47,7 @@ export default class OtpVerification extends Component {
 
   render() {
     const { code } = this.state
+    const {email } = this.props.navigation.state.params
     return (
       <View style={styles.parentView}>
             <Image
@@ -55,7 +56,7 @@ export default class OtpVerification extends Component {
         />
         <Text style={styles.titleText}>{constants.VERIFICATION_CODE}</Text>
         <Text>{constants.OTP_TEXT} </Text>
-        <Text style = {{marginBottom:15}}>to xyz@gmail.com</Text>
+        <Text style = {{marginBottom:15}}>to {email}</Text>
         <SmoothPinCodeInput
           ref={this.pinInput}
           value={code}

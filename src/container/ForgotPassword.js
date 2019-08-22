@@ -46,8 +46,8 @@ class ForgotPassword extends React.Component {
           }
         })
         .catch(error => {
-          if(error.response.status === 400 )
-          this.dropDownAlertRef.alertWithType('warn',constants.WARNING,constants.NOT_FOUND_EMAIL)
+        //  if(error.response.status === 400 )
+          //this.dropDownAlertRef.alertWithType('warn',constants.WARNING,constants.NOT_FOUND_EMAIL)
           console.log("error", error);
         });
       }else {
@@ -90,6 +90,8 @@ class ForgotPassword extends React.Component {
               ref={input => (this.emailId = input)}
               placeholder={constants.ENTER_EMAIL_ID}
               returnKeyType={"done"}
+              autoCapitalize={'none'}
+              autoCorrect={false}
               onChangeText={this.onChangeValue("emailId")}
             />
           </View>

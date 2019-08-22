@@ -6,5 +6,6 @@ export const urls = {
   forgotPassword: base_url + 'auth/forgot-password',
   resetPassword: base_url + 'auth/reset-password',
   signUp: base_url + 'auth/sign-up',
-  OtpVerification : base_url + 'users/verify/'
+  OtpVerification : base_url + 'users/verify/',
+  getAllLocation: base_url + 'location',
 };

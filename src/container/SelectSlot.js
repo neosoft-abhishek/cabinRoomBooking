@@ -145,8 +145,8 @@ export default class SelectSlot extends Component {
     const compareTime = moment(value, timeFormat);
     if (bookingTime && bookingTime.length > 0) {
       bookingTime.some((data, index) => {
-        const start = moment(data.startTime, timeFormat);
-        const end = moment(data.endTime, timeFormat);
+        const start = moment(data.start_time, timeFormat);
+        const end = moment(data.end_time, timeFormat);
 
         if (moment(start).isSame(compareTime)) {
           this.setState({ noSlot: constants.NO_SLOT, bufferArray: [] });
@@ -334,6 +334,7 @@ export default class SelectSlot extends Component {
         )}
         <DateTimePicker
           mode={"time"}
+          timePickerModeAndroid={"spinner"}
           minimumDate={this.addMinutesToDate(new Date(), 15)}
           minuteInterval={15}
           isVisible={this.state.isDateTimePickerVisible}

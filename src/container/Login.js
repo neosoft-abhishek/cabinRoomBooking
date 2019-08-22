@@ -6,8 +6,10 @@ import {
   Image,
   KeyboardAvoidingView,
   Keyboard,
-  TouchableOpacity
+  TouchableOpacity,
+  StatusBar
 } from "react-native";
+import Loader from '../commonComponent/Loader'
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { onLoginClick } from "../action/index";
@@ -29,8 +31,9 @@ class Login extends React.Component {
   }
 
   state = {
-    emailId: "",
-    password: ""
+    emailId: "abhishek.jaiswal@neosofttech.com",
+    password: "Test@123",
+    isLoading:false
   };
 
   isEmpty = (str, key) => {
@@ -70,19 +73,24 @@ class Login extends React.Component {
       this.isEmpty(password, "password") &&
       this.isEmailValidate(emailId)
     ) {
+      this.setState({isLoading: true})
       callbackApiCalling
         .post(urls.loginUrl, body, null, null)
         .then(response => {
           if (response.data.success) {
+            this.setState({isLoading: false})
             this.props.navigation.navigate("LocationList");
           } else {
             alert("Something went wrong...");
           }
         })
         .catch(error => {
-          if(error.response.status === 400 )
-          this.dropDownAlertRef.alertWithType('error',constants.WARNING,constants.USER_CREDENTIAL_ERROR)
+       //   if(error.response.status === 400 )
+       this.setState({isLoading: false})
+        this.dropDownAlertRef.alertWithType('error',constants.WARNING,error.response.data.message)  
           console.log("error", error);
+
+          //alert();
           
         });
     }
@@ -115,6 +123,14 @@ class Login extends React.Component {
     const { invisible } = this.state;
     return (
       <KeyboardAvoidingView style={styles.parentView} behavior="padding">
+        
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.THEME_COLOR}
+        />
+        <Loader
+        loading = {this.state.isLoading}
+        />
         <Image
           style={styles.logoImage}
           source={{ uri: "http://mis.neosofttech.in//images/logo.jpg" }}
@@ -135,6 +151,8 @@ class Login extends React.Component {
               blurOnSubmit={false}
               placeholder={constants.ENTER_EMAIL_ID}
               returnKeyType={"next"}
+              autoCapitalize={'none'}
+              autoCorrect={false}
               onChangeText={this.onChangeValue("emailId")}
               //value={this.state.text}
             />
@@ -146,11 +164,14 @@ class Login extends React.Component {
             <TextInput
               style={styles.styleTextInput}
               placeholder={constants.ENTER_PASSWORD}
+              autoCapitalize={'none'}
+              autoCorrect={false}
               ref={input => (this.password = input)}
               onSubmitEditing={event => {
                 this.validation(event, null, "Password");
                 Keyboard.dismiss;
               }}
+              secureTextEntry={true}
               //blurOnSubmit={false}
               returnKeyType={"done"}
               onChangeText={this.onChangeValue("password")}

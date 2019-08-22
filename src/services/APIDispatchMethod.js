@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const apicalling = (
+export const apiCalling = (
   methodCall,
   url,
   header,

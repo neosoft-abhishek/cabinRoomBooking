@@ -71,7 +71,7 @@ class Registration extends React.Component {
         .post(urls.signUp, body, null, null)
         .then(response => {
           if (response.data.success) {
-            this.props.navigation.navigate("OTPVerification");
+            this.props.navigation.navigate("OTPVerification", {email: emailId});
           } else {
             alert("Something went wrong...");
           }
@@ -163,6 +163,8 @@ class Registration extends React.Component {
               style={styles.styleTextInput}
               ref={input => (this.emailId = input)}
               keyboardType="email-address"
+              autoCapitalize={'none'}
+              autoCorrect={false}
               onSubmitEditing={() => {
                 this.password.focus();
               }}

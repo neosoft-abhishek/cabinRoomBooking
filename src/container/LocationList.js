@@ -11,9 +11,11 @@ import {
 import { connect } from "react-redux";
 import { colors } from "../utils/Colors";
 import { constants } from "../utils/Constants";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { bindActionCreators } from "redux";
 import * as Animatable from "react-native-animatable";
 import Accordion from "react-native-collapsible/Accordion";
+import { callAllLocation } from "../action/index";
+import Loader from "../commonComponent/Loader";
 
 const data = [
   {
@@ -53,32 +55,47 @@ const data = [
     ]
   }
 ];
-export default class LocationList extends Component {
-  static navigationOptions = ({navigation} ) => {
+class LocationList extends Component {
+  static navigationOptions = ({ navigation }) => {
     return {
       title: constants.LOCATION,
-      headerLeft: navigation.state.params ? 
-       navigation.state.params.backKey : null ,
-        headerStyle: {
-          backgroundColor: "#fff"
-        },
-        headerTintColor: "#000"
-      };
-      // headerLeft: navigation.state.params ? 
-      // navigation.state.params.backKey && { 
-      //   title:'back'
-      // }
-      // : null
+      headerLeft: navigation.state.params
+        ? navigation.state.params.backKey
+        : null,
+      headerStyle: {
+        backgroundColor: "#fff"
+      },
+      headerTintColor: "#000"
+    };
+    // headerLeft: navigation.state.params ?
+    // navigation.state.params.backKey && {
+    //   title:'back'
+    // }
+    // : null
   };
 
   state = {
-    activeSections: []
+    activeSections: [],
+    getList: []
   };
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.getAllLocation && props.getAllLocation !== state.getList) {
+      return {
+        getList: props.getAllLocation
+      };
+    }
+    return null; /// Return null if the state hasn't changed
+  }
+
+  componentDidMount() {
+    this.props.callAllLocation();
+  }
 
   _renderHeader = section => {
     return (
       <View style={{ alignItems: "center" }}>
-        <Text style={styles.headerStyle}>{section.locationCity}</Text>
+        <Text style={styles.headerStyle}>{section._id}</Text>
       </View>
     );
   };
@@ -87,7 +104,7 @@ export default class LocationList extends Component {
     return (
       <View style={{ alignItems: "center" }}>
         <FlatList
-          data={section.locationArea}
+          data={section.cabins}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
           renderItem={this.renderItems}
@@ -98,9 +115,18 @@ export default class LocationList extends Component {
 
   renderItems = ({ item }, data) => {
     return (
-      <TouchableOpacity style={styles.subTextStyle}
-      onPress = {()=> this.props.navigation.navigate('MeetingRoom', { locationArea:item.area})}>
-        <Text style={{ color: colors.WHITE, fontSize: 15, fontWeight:'500' }}>{item.area}</Text>
+      <TouchableOpacity
+        style={styles.subTextStyle}
+        onPress={() =>
+          this.props.navigation.navigate("MeetingRoom", {
+            locationArea: item.area,
+            locationId: item._id
+          })
+        }
+      >
+        <Text style={{ color: colors.WHITE, fontSize: 15, fontWeight: "500" }}>
+          {item.area}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -110,8 +136,10 @@ export default class LocationList extends Component {
   };
   _keyExtractor = (item, index) => item.area;
 
-
   render() {
+    //console.log("OnSuccess", this.props.getAllLocation)
+    //console.log("LOADING", this.props.isLoading)
+    //console.log("Failure", this.props.failureAPI)
     return (
       <ImageBackground
         source={{
@@ -120,9 +148,11 @@ export default class LocationList extends Component {
         }}
         style={styles.imageBackground}
       >
+        <Loader loading={this.props.isLoading} />
         <Text style={styles.titleText}>{constants.SELECT_A_LOCATION}</Text>
+
         <Accordion
-          sections={data}
+          sections={this.state.getList}
           activeSections={this.state.activeSections}
           // renderSectionTitle={this._renderSectionTitle}
           renderHeader={this._renderHeader}
@@ -133,6 +163,23 @@ export default class LocationList extends Component {
     );
   }
 }
+
+mapStateToProps = state => {
+  return {
+    getAllLocation: state.GetAllLocation.payload.data,
+    isLoading: state.GetAllLocation.isLoading,
+    failureAPI: state.GetAllLocation.onFailureData
+  };
+};
+
+mapDispatchToProps = dispatch => {
+  return bindActionCreators(
+    {
+      callAllLocation
+    },
+    dispatch
+  );
+};
 
 const styles = {
   subTextStyle: {
@@ -168,3 +215,8 @@ const styles = {
     margin: 15
   }
 };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LocationList);

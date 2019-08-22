@@ -118,7 +118,7 @@ class BookingRoomDetails extends Component {
         return obj;
       }
     });
-    Alert.alert("Delete", "Are you sure want to delete this meeting room?", [
+    Alert.alert("Delete", constants.DELETE_MEETING_LABEL, [
       { text: "Ok", onPress: () => this.onDeleteRoom(filterObj) },
       {
         text: "Cancel",

@@ -43,6 +43,7 @@ export const constants = {
     EMAIL_ERROR_LABEL:'Please enter a valid email address which has provided by the Neosoft organization',
     NOT_FOUND_EMAIL:'We cannot find an account with that email address in our database',
     WARNING:'There was a problem',
+    DELETE_MEETING_LABEL:'Are you sure want to cancel this meeting room ?',
     PASSWORD_MIS_MATCH:'your password and confirm password is not matching, please try it again',
     USER_CREDENTIAL_ERROR:'We cannot find an account with this credential in our database, please try it again.'
 }

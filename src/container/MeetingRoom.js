@@ -4,9 +4,10 @@ import { constants } from "../utils/Constants";
 import { colors } from "../utils/Colors";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Icons from "react-native-vector-icons/Feather";
-//import moment, { min } from "moment";
-//import momentTime from "moment-timezone";
-
+import { bindActionCreators } from "redux";
+import { callAllCabins } from "../action/index";
+import { connect } from "react-redux";
+import Loader from "../commonComponent/Loader";
 
 const arrayOfMeetingRoom = [
   {
@@ -16,20 +17,20 @@ const arrayOfMeetingRoom = [
     capacity: 3,
     bookingTime: [
       {
-        startTime: "2019-08-20T16:00:00",
-        endTime: "2019-08-20T16:15:00"
+        startTime: "2019-08-22T16:00:00.898Z",
+        endTime: "2019-08-22T16:15:00.898Z"
       },
       {
-        startTime: "2019-08-20T16:15:00",
-        endTime: "2019-08-20T16:30:00"
+        startTime: "2019-08-22T16:15:00.898Z",
+        endTime: "2019-08-22T16:30:00.898Z"
       },
       {
-        startTime: "2019-08-20T18:00:00",
-        endTime: "2019-08-20T18:45:00"
+        startTime: "2019-08-22T18:00:00.898Z",
+        endTime: "2019-08-22T18:45:00.898Z"
       },
       {
-        startTime: "2019-08-20T20:00:00",
-        endTime: "2019-08-20T20:45:00"
+        startTime: "2019-08-22T20:00:00.898Z",
+        endTime: "2019-08-22T20:45:00.898Z"
       }
     ]
   },
@@ -104,55 +105,68 @@ const arrayOfMeetingRoom = [
 class MeetingRoom extends Component {
   static navigationOptions = {
     title: constants.MEETING_ROOM,
-      headerStyle: {
-        backgroundColor: "#fff"
-      },
-      headerTintColor: "#000"
-    }
+    headerStyle: {
+      backgroundColor: "#fff"
+    },
+    headerTintColor: "#000"
+  };
 
-  constructor(props){
-    super(props)
-    var getParams = this.props.navigation.state.params
+  constructor(props) {
+    super(props);
+    var getParams = this.props.navigation.state.params;
     this.state = {
-      locationArea: getParams.locationArea
+      locationArea: getParams.locationArea,
+      locationId: getParams.locationId,
+      getAllCabins: []
+    };
+  }
+
+  componentDidMount() {
+    this.props.callAllCabins(this.state.locationId);
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.getAllCabins && props.getAllCabins !== state.getAllCabins) {
+      return {
+        getAllCabins: props.getAllCabins
+      };
     }
+    return null;
   }
 
   _keyExtractor = (item, index) => item.id;
 
   renderItems = ({ item }) => {
-    // console.log("MOmentChecking",
-    // momentTime(moment(item.bookingTime[0].startTime, "YYYY-MM-DDTHH:mm:ssZ").format('HH:mm'),'Asia/Calcutta').utcOffset(330))
     return (
       <TouchableOpacity
         onPress={() =>
           this.props.navigation.navigate("SelectSlot", {
-            bookingTime: item.bookingTime,
-            roomName: item.room,
+            bookingTime: item.bookings,
+            roomName: item.name,
             roomCapacity: item.capacity
           })
         }
         style={[
-          styles.slotTouchable,
+          styles.slotTouchable
           // { borderColor: item.available ? colors.GREEN : colors.YELLOW }
         ]}
       >
         <Text style={styles.topText}>
-          <Icons
-          name={'users'}
-          size={16}
-          color={colors.THEME_COLOR}
-        /> {""}{item.capacity} </Text>
+          <Icons name={"users"} size={16} color={colors.THEME_COLOR} /> {""}
+          {item.capacity}{" "}
+        </Text>
         <Icon
           name={item.available ? "home-city-outline" : "home-alert"}
           size={50}
-          color={item.available ? colors.GREEN : colors.THEME_COLOR}
+          color={item.bookings.length < 5 ? colors.GREEN : colors.THEME_COLOR}
         />
         <Text style={[styles.bufferText, { fontWeight: "400" }]}>
-          {item.room}
+          {item.name}
         </Text>
         <Text style={[styles.bufferText, { color: colors.GRAY }]}>
-          {item.available ? constants.BOOK_ROOM : constants.SOME_ROOM_AVAILABLE}
+          {item.bookings.length < 5
+            ? constants.BOOK_ROOM
+            : constants.SOME_ROOM_AVAILABLE}
         </Text>
       </TouchableOpacity>
     );
@@ -161,10 +175,11 @@ class MeetingRoom extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style = {styles.titleStyle}>{this.state.locationArea}</Text>
+        <Text style={styles.titleStyle}>{this.state.locationArea}</Text>
+        <Loader loading={this.props.isLoading} />
         <FlatList
           contentContainerStyle={{ alignItems: "center" }}
-          data={arrayOfMeetingRoom}
+          data={this.state.getAllCabins}
           extraData={this.state}
           horizontal={false}
           numColumns={2}
@@ -183,12 +198,12 @@ const styles = {
     padding: "1%",
     backgroundColor: "#f7f7f7"
   },
-  titleStyle:{
-    margin:5,
-    textAlign:'center',
-    fontSize:16,
-    fontWeight:'700',
-    color:colors.THEME_COLOR
+  titleStyle: {
+    margin: 5,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.THEME_COLOR
   },
   topText: {
     position: "absolute",
@@ -203,7 +218,7 @@ const styles = {
   },
   slotTouchable: {
     borderWidth: 1,
-    width: "45%",
+    width: 150,
     height: 150,
     backgroundColor: "#fff",
     padding: 10,
@@ -224,4 +239,24 @@ const styles = {
   }
 };
 
-export default MeetingRoom;
+mapStateToProps = state => {
+  return {
+    getAllCabins: state.GetAllCabins.payload.data,
+    isLoading: state.GetAllCabins.isLoading,
+    failureAPI: state.GetAllCabins.onFailureData
+  };
+};
+
+mapDispatchToProps = dispatch => {
+  return bindActionCreators(
+    {
+      callAllCabins
+    },
+    dispatch
+  );
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MeetingRoom);
